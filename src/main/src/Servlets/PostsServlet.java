@@ -2,7 +2,6 @@ package Servlets;
 
 import DAO.PostDao;
 import Models.Post;
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -10,22 +9,20 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Properties;
 
+import static Utility.ServletUtility.*;
+
 @WebServlet(name = "PostsServlet", urlPatterns = "/posts")
 public class PostsServlet extends HttpServlet {
-    private static final String JSON_CONTENT_TYPE = "application/json";
     private static PostDao dao;
-    private static final Gson GSON = new Gson();
 
     @Override
     public void init() throws ServletException {
@@ -44,6 +41,11 @@ public class PostsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (!checkAuth(req)) {
+            resp.sendError(403);
+            return;
+        }
+
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) {
             Post[] allPosts = dao.getAllPosts();
@@ -64,6 +66,11 @@ public class PostsServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (!checkAuth(req)) {
+            resp.sendError(403);
+            return;
+        }
+
         String json = receiveJsonBody(req);
         JsonReader reader = new JsonReader(new StringReader(json));
         reader.setLenient(true);
@@ -74,6 +81,11 @@ public class PostsServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (!checkAuth(req)) {
+            resp.sendError(403);
+            return;
+        }
+
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) {
             resp.sendError(400);
@@ -89,6 +101,11 @@ public class PostsServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (!checkAuth(req)) {
+            resp.sendError(403);
+            return;
+        }
+
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) {
             resp.sendError(400);
@@ -97,23 +114,5 @@ public class PostsServlet extends HttpServlet {
 
         int id = Integer.parseInt(pathInfo.substring(1));
         dao.deletePost(id);
-    }
-
-    private static String receiveJsonBody(HttpServletRequest req) throws IOException {
-        BufferedReader reader = req.getReader();
-        StringBuilder sb = new StringBuilder();
-        char[] charBuffer = new char[128];
-        while ((reader.read(charBuffer)) != -1) {
-            sb.append(charBuffer);
-        }
-        return sb.toString();
-    }
-
-    private static void sendJsonBody(HttpServletResponse resp, Object body) throws IOException {
-        resp.setContentType(JSON_CONTENT_TYPE);
-        String serialized = GSON.toJson(body);
-        resp.setContentLength(serialized.getBytes().length);
-        ServletOutputStream outputStream = resp.getOutputStream();
-        outputStream.print(serialized);
     }
 }

@@ -22,5 +22,6 @@
     <mappers>
         <mapper resource="PostMapper.xml"/>
         <mapper resource="CommentMapper.xml"/>
+        <mapper resource="UserMapper.xml"/>
     </mappers>
 </configuration>

@@ -11,26 +11,28 @@
     </select>
 
     <select id='getAllComments' resultMap='CommentResult'>
-        SELECT * FROM comments
+        SELECT *
+        FROM comments
     </select>
 
     <insert id='addComment' parameterType='Comment' useGeneratedKeys='true' keyProperty='id'>
         INSERT INTO comments(postId, name, email, body)
-        VALUES(#{postId}, #{name}, #{email}, #{body})
+        VALUES (#{postId}, #{name}, #{email}, #{body})
     </insert>
 
     <update id='updateComment' parameterType='Comment'>
         UPDATE comments
-        SET
-            postId = #{postId},
-            name = #{name},
-            email = #{email},
-            body = #{body}
-            WHERE id = #{id}
+        SET postId = #{postId},
+            name   = #{name},
+            email  = #{email},
+            body   = #{body}
+        WHERE id = #{id}
     </update>
 
     <delete id='deleteComment' parameterType='int'>
-        DELETE FROM comments WHERE id = #{id}
+        DELETE
+        FROM comments
+        WHERE id = #{id}
     </delete>
 
     <resultMap type='Comment' id='CommentResult'>

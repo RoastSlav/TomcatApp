@@ -1,8 +1,8 @@
 package Models;
 
 public class User {
-    int id;
-    String username;
-    String email;
-    String password;
+    public int id;
+    public String username;
+    public String email;
+    public String password;
 }

@@ -1,7 +1,6 @@
 package DAO;
 
 import Mappers.CommentMapper;
-import Mappers.PostMapper;
 import Models.Comment;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -41,7 +40,7 @@ public class CommentDao implements CommentMapper {
 
     @Override
     public int updateComment(Comment comment) {
-       validateNotNull(comment);
+        validateNotNull(comment);
         try (SqlSession session = sqlFactory.openSession()) {
             CommentMapper mapper = session.getMapper(CommentMapper.class);
             return mapper.updateComment(comment);

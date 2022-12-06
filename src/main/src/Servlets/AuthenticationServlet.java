@@ -1,7 +1,7 @@
 package Servlets;
 
-import DAO.CommentDao;
-import Models.Comment;
+import DAO.UserDao;
+import Models.User;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -10,15 +10,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.Properties;
 
-import static Utility.ServletUtility.checkAuth;
-import static Utility.ServletUtility.sendJsonBody;
-
-public class CommentsServlet extends HttpServlet {
-    private static CommentDao dao;
+public class AuthenticationServlet extends HttpServlet {
+    UserDao dao;
 
     @Override
     public void init() throws ServletException {
@@ -28,7 +27,7 @@ public class CommentsServlet extends HttpServlet {
             String mBatisResource = props.getProperty("mb_resource");
             try (Reader reader = Resources.getResourceAsReader(mBatisResource)) {
                 SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(reader, props);
-                dao = new CommentDao(sessionFactory);
+                dao = new UserDao(sessionFactory);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -36,16 +35,18 @@ public class CommentsServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (!checkAuth(req)) {
-            resp.sendError(403);
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+
+        User user = dao.getUser(username);
+        if (user != null && user.password.equals(password)) {
+            HttpSession session = req.getSession(true);
+            session.setAttribute("userName", username);
             return;
         }
 
-        String userId = req.getParameter("postId");
-        int id = Integer.parseInt(userId);
-
-        Comment[] comment = dao.getComment(id);
-        sendJsonBody(resp, comment);
+        PrintWriter writer = resp.getWriter();
+        writer.println("Forbidden!");
     }
 }
