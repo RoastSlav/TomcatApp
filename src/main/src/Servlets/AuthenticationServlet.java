@@ -60,7 +60,7 @@ public class AuthenticationServlet extends HttpServlet {
     private boolean loginUser(HttpServletRequest req) throws ServletException, IOException {
         String username = getValueFromPart("username", req);
         String password = getValueFromPart("password", req);
-        String encryptedPass = encryptPassword(password);
+        String encryptedPass = hashPassword(password);
 
         User user = dao.getUser(username);
         if (user != null && user.password.equals(encryptedPass)) {
@@ -74,9 +74,9 @@ public class AuthenticationServlet extends HttpServlet {
     private void registerUser(HttpServletRequest req) throws IOException {
         String jsonBody = receiveJsonBody(req);
         User user = GSON.fromJson(jsonBody, User.class);
-        user.password = encryptPassword(user.password);
+        user.password = hashPassword(user.password);
         dao.createUser(user);
-        HttpSession session = req.getSession();
+        HttpSession session = req.getSession(true);
         session.setAttribute("userName", user.username);
     }
 }

@@ -25,7 +25,7 @@ import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
 public class PostsServlet extends HttpServlet {
     private static final Pattern COMMENTS_PATTERN = Pattern.compile("\\/comments\\?postId=(\\d+)");
-    private static final Pattern POST_PATTERN = Pattern.compile("\\/(d+)");
+    private static final Pattern POST_ID_PATTERN = Pattern.compile("\\/(d+)");
     private static PostDao dao;
 
     @Override
@@ -58,7 +58,7 @@ public class PostsServlet extends HttpServlet {
             return;
         }
 
-        matcher = POST_PATTERN.matcher(pathInfo);
+        matcher = POST_ID_PATTERN.matcher(pathInfo);
         if (matcher.matches()) {
             int i = Integer.parseInt(matcher.group(1));
             Post post = dao.getPost(i);

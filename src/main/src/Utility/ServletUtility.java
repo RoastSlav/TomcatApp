@@ -37,7 +37,7 @@ public class ServletUtility {
     }
 
     public static boolean checkAuth(HttpServletRequest req) {
-        HttpSession session = req.getSession();
+        HttpSession session = req.getSession(false);
         return session.getAttribute("userName") != null;
     }
 
@@ -52,7 +52,7 @@ public class ServletUtility {
         return sb.toString();
     }
 
-    public static String encryptPassword(String password) {
+    public static String hashPassword(String password) {
         MessageDigest crypt = null;
         try {
             crypt = MessageDigest.getInstance("SHA-1");
