@@ -16,6 +16,7 @@ import java.util.Properties;
 
 import static Utility.ServletUtility.checkAuth;
 import static Utility.ServletUtility.sendJsonBody;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
 public class CommentsServlet extends HttpServlet {
     private static CommentDao dao;
@@ -38,7 +39,7 @@ public class CommentsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (!checkAuth(req)) {
-            resp.sendError(403);
+            resp.sendError(SC_FORBIDDEN);
             return;
         }
 

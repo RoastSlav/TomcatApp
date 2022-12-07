@@ -15,9 +15,18 @@ public class UserDao implements UserMapper {
     @Override
     public User getUser(String username) {
         validateNotNull(username);
-        try (SqlSession session = sqlFactory.openSession()) {
+        try (SqlSession session = sqlFactory.openSession(true)) {
             UserMapper mapper = session.getMapper(UserMapper.class);
             return mapper.getUser(username);
+        }
+    }
+
+    @Override
+    public int createUser(User user) {
+        validateNotNull(user);
+        try (SqlSession session = sqlFactory.openSession(true)) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            return mapper.createUser(user);
         }
     }
 

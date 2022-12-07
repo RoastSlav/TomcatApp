@@ -15,7 +15,7 @@ public class PostDao implements PostMapper {
     @Override
     public Post getPost(int id) {
         validateNotNegative(id);
-        try (SqlSession session = sqlFactory.openSession()) {
+        try (SqlSession session = sqlFactory.openSession(true)) {
             PostMapper mapper = session.getMapper(PostMapper.class);
             return mapper.getPost(id);
         }
@@ -23,7 +23,7 @@ public class PostDao implements PostMapper {
 
     @Override
     public Post[] getAllPosts() {
-        try (SqlSession session = sqlFactory.openSession()) {
+        try (SqlSession session = sqlFactory.openSession(true)) {
             PostMapper mapper = session.getMapper(PostMapper.class);
             return mapper.getAllPosts();
         }
@@ -32,7 +32,7 @@ public class PostDao implements PostMapper {
     @Override
     public int addPost(Post post) {
         validateNotNull(post);
-        try (SqlSession session = sqlFactory.openSession()) {
+        try (SqlSession session = sqlFactory.openSession(true)) {
             PostMapper mapper = session.getMapper(PostMapper.class);
             return mapper.addPost(post);
         }
@@ -41,7 +41,7 @@ public class PostDao implements PostMapper {
     @Override
     public int updatePost(Post post) {
         validateNotNull(post);
-        try (SqlSession session = sqlFactory.openSession()) {
+        try (SqlSession session = sqlFactory.openSession(true)) {
             PostMapper mapper = session.getMapper(PostMapper.class);
             return mapper.updatePost(post);
         }
@@ -50,7 +50,7 @@ public class PostDao implements PostMapper {
     @Override
     public int deletePost(int id) {
         validateNotNegative(id);
-        try (SqlSession session = sqlFactory.openSession()) {
+        try (SqlSession session = sqlFactory.openSession(true)) {
             PostMapper mapper = session.getMapper(PostMapper.class);
             return mapper.deletePost(id);
         }

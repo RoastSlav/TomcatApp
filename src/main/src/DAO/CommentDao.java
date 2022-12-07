@@ -15,7 +15,7 @@ public class CommentDao implements CommentMapper {
     @Override
     public Comment[] getComment(int id) {
         validateNotNegative(id);
-        try (SqlSession session = sqlFactory.openSession()) {
+        try (SqlSession session = sqlFactory.openSession(true)) {
             CommentMapper mapper = session.getMapper(CommentMapper.class);
             return mapper.getComment(id);
         }
@@ -23,7 +23,7 @@ public class CommentDao implements CommentMapper {
 
     @Override
     public Comment getAllComments() {
-        try (SqlSession session = sqlFactory.openSession()) {
+        try (SqlSession session = sqlFactory.openSession(true)) {
             CommentMapper mapper = session.getMapper(CommentMapper.class);
             return mapper.getAllComments();
         }
@@ -32,7 +32,7 @@ public class CommentDao implements CommentMapper {
     @Override
     public int addComment(Comment comment) {
         validateNotNull(comment);
-        try (SqlSession session = sqlFactory.openSession()) {
+        try (SqlSession session = sqlFactory.openSession(true)) {
             CommentMapper mapper = session.getMapper(CommentMapper.class);
             return mapper.addComment(comment);
         }
@@ -41,7 +41,7 @@ public class CommentDao implements CommentMapper {
     @Override
     public int updateComment(Comment comment) {
         validateNotNull(comment);
-        try (SqlSession session = sqlFactory.openSession()) {
+        try (SqlSession session = sqlFactory.openSession(true)) {
             CommentMapper mapper = session.getMapper(CommentMapper.class);
             return mapper.updateComment(comment);
         }
@@ -50,7 +50,7 @@ public class CommentDao implements CommentMapper {
     @Override
     public int deleteComment(int id) {
         validateNotNegative(id);
-        try (SqlSession session = sqlFactory.openSession()) {
+        try (SqlSession session = sqlFactory.openSession(true)) {
             CommentMapper mapper = session.getMapper(CommentMapper.class);
             return mapper.deleteComment(id);
         }
