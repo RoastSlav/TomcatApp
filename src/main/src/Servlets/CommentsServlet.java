@@ -14,9 +14,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Properties;
 
-import static Utility.ServletUtility.checkAuth;
 import static Utility.ServletUtility.sendJsonBody;
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
 public class CommentsServlet extends HttpServlet {
     private static CommentDao dao;

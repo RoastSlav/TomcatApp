@@ -14,6 +14,7 @@
     <servlet-mapping>
         <servlet-name>PostsServlet</servlet-name>
         <url-pattern>/posts/*</url-pattern>
+        <url-pattern>/posts</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -41,10 +42,18 @@
     <filter-mapping>
         <filter-name>AuthFiler</filter-name>
         <servlet-name>CommentsServlet</servlet-name>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>AuthFiler</filter-name>
         <servlet-name>PostsServlet</servlet-name>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>LoggingFilter</filter-name>
+        <filter-class>Filters.LoggingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LoggingFilter</filter-name>
+        <servlet-name>PostsServlet</servlet-name>
+        <servlet-name>CommentsServlet</servlet-name>
+        <servlet-name>AuthenticationServlet</servlet-name>
     </filter-mapping>
 
 </web-app>
