@@ -22,8 +22,8 @@ import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 public class AuthenticationServlet extends HttpServlet {
-    private static final Pattern REGISTER_PATTERN = Pattern.compile("\\/register");
-    private static final Pattern LOGIN_PATTERN = Pattern.compile("\\/login");
+    private static final Pattern REGISTER_PATTERN = Pattern.compile("/register");
+    private static final Pattern LOGIN_PATTERN = Pattern.compile("/login");
     UserDao dao;
 
     @Override

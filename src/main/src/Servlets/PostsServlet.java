@@ -24,8 +24,8 @@ import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
 public class PostsServlet extends HttpServlet {
-    private static final Pattern COMMENTS_PATTERN = Pattern.compile("\\/(\\d+)/comments");
-    private static final Pattern POST_ID_PATTERN = Pattern.compile("\\/(d+)");
+    private static final Pattern COMMENTS_PATTERN = Pattern.compile("/(\\d+)/comments");
+    private static final Pattern POST_ID_PATTERN = Pattern.compile("/(d+)");
     private PostDao dao;
 
     @Override
