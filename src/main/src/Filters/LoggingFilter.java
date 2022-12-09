@@ -12,6 +12,7 @@ import java.util.logging.SimpleFormatter;
 
 public class LoggingFilter implements Filter {
     private static final Logger LOGGER = Logger.getLogger("ServletLogger");
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         try {

@@ -6,7 +6,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +17,7 @@ public class ServletUtility {
     public static final Gson GSON = new Gson();
     private static final String JSON_CONTENT_TYPE = "application/json";
     public static MessageDigest crypt;
+
     static {
         try {
             crypt = MessageDigest.getInstance("SHA-1");

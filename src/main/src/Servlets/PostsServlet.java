@@ -16,13 +16,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Properties;
-import java.util.logging.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static Utility.ServletUtility.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
 public class PostsServlet extends HttpServlet {
     private static final Pattern COMMENTS_PATTERN = Pattern.compile("/(\\d+)/comments");
