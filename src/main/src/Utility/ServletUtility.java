@@ -17,13 +17,22 @@ import java.security.NoSuchAlgorithmException;
 public class ServletUtility {
     public static final Gson GSON = new Gson();
     private static final String JSON_CONTENT_TYPE = "application/json";
+    public static MessageDigest crypt;
+    static {
+        try {
+            crypt = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static String receiveJsonBody(HttpServletRequest req) throws IOException {
         BufferedReader reader = req.getReader();
         StringBuilder sb = new StringBuilder();
         char[] charBuffer = new char[128];
-        while ((reader.read(charBuffer)) != -1) {
-            sb.append(charBuffer);
+        int readBytes;
+        while ((readBytes = reader.read(charBuffer)) != -1) {
+            sb.append(charBuffer, 0, readBytes);
         }
         return sb.toString();
     }
@@ -38,7 +47,7 @@ public class ServletUtility {
 
     public static boolean checkAuth(HttpServletRequest req) {
         HttpSession session = req.getSession(false);
-        return session.getAttribute("userName") != null;
+        return session != null && session.getAttribute("userName") != null;
     }
 
     public static String getValueFromPart(String partName, HttpServletRequest req) throws ServletException, IOException {
@@ -53,13 +62,6 @@ public class ServletUtility {
     }
 
     public static String hashPassword(String password) {
-        MessageDigest crypt = null;
-        try {
-            crypt = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException ignored) {
-            return password;
-        }
-
         crypt.reset();
         crypt.update(password.getBytes());
 

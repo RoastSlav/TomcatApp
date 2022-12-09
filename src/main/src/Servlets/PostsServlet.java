@@ -24,9 +24,9 @@ import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
 public class PostsServlet extends HttpServlet {
-    private static final Pattern COMMENTS_PATTERN = Pattern.compile("\\/comments\\?postId=(\\d+)");
+    private static final Pattern COMMENTS_PATTERN = Pattern.compile("\\/(\\d+)/comments");
     private static final Pattern POST_ID_PATTERN = Pattern.compile("\\/(d+)");
-    private static PostDao dao;
+    private PostDao dao;
 
     @Override
     public void init() throws ServletException {
@@ -39,7 +39,7 @@ public class PostsServlet extends HttpServlet {
                 dao = new PostDao(sessionFactory);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ServletException("There was an error while initializing the servlet", e);
         }
     }
 
@@ -50,6 +50,7 @@ public class PostsServlet extends HttpServlet {
             return;
         }
 
+        // /posts/1/comments
         String pathInfo = req.getPathInfo();
         Matcher matcher = COMMENTS_PATTERN.matcher(pathInfo);
         if (matcher.matches()) {
@@ -58,6 +59,7 @@ public class PostsServlet extends HttpServlet {
             return;
         }
 
+        // /posts/1
         matcher = POST_ID_PATTERN.matcher(pathInfo);
         if (matcher.matches()) {
             int i = Integer.parseInt(matcher.group(1));
@@ -66,6 +68,7 @@ public class PostsServlet extends HttpServlet {
             return;
         }
 
+        // /posts
         Post[] allPosts = dao.getAllPosts();
         sendJsonBody(resp, allPosts);
     }
@@ -80,9 +83,13 @@ public class PostsServlet extends HttpServlet {
         String json = receiveJsonBody(req);
         JsonReader reader = new JsonReader(new StringReader(json));
         reader.setLenient(true);
-        Post post = GSON.fromJson(reader, Post.class);
-        dao.addPost(post);
-        sendJsonBody(resp, post);
+        try {
+            Post post = GSON.fromJson(reader, Post.class);
+            dao.addPost(post);
+            sendJsonBody(resp, post);
+        } catch (Exception e) {
+            resp.sendError(SC_BAD_REQUEST);
+        }
     }
 
     @Override
@@ -98,11 +105,17 @@ public class PostsServlet extends HttpServlet {
             return;
         }
 
-        String json = receiveJsonBody(req);
-        Post post = GSON.fromJson(json, Post.class);
-        post.id = Integer.parseInt(pathInfo.substring(1));
-        dao.updatePost(post);
-        sendJsonBody(resp, post);
+        try {
+            String json = receiveJsonBody(req);
+            Post post = GSON.fromJson(json, Post.class);
+            dao.addPost(post);
+            sendJsonBody(resp, post);
+            post.id = Integer.parseInt(pathInfo.substring(1));
+            dao.updatePost(post);
+            sendJsonBody(resp, post);
+        } catch (Exception e) {
+            resp.sendError(SC_BAD_REQUEST);
+        }
     }
 
     @Override
@@ -118,7 +131,11 @@ public class PostsServlet extends HttpServlet {
             return;
         }
 
-        int id = Integer.parseInt(pathInfo.substring(1));
-        dao.deletePost(id);
+        try {
+            int id = Integer.parseInt(pathInfo.substring(1));
+            dao.deletePost(id);
+        } catch (Exception e) {
+            resp.sendError(SC_BAD_REQUEST);
+        }
     }
 }
