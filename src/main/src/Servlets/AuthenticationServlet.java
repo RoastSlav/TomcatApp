@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Properties;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import static Utility.ServletUtility.*;
@@ -60,10 +61,13 @@ public class AuthenticationServlet extends HttpServlet {
     private boolean loginUser(HttpServletRequest req) throws ServletException, IOException {
         String username = getValueFromPart("username", req);
         String password = getValueFromPart("password", req);
-        String encryptedPass = hashPassword(password);
 
         User user = dao.getUser(username);
-        if (user != null && user.password.equals(encryptedPass)) {
+        if (user == null)
+            return false;
+
+        String encryptedPass = hashPassword(password + user.salt);
+        if (user.password.equals(encryptedPass)) {
             HttpSession session = req.getSession(true);
             session.setAttribute("userName", username);
             return true;
@@ -74,7 +78,12 @@ public class AuthenticationServlet extends HttpServlet {
     private void registerUser(HttpServletRequest req) throws IOException {
         String jsonBody = receiveJsonBody(req);
         User user = GSON.fromJson(jsonBody, User.class);
-        user.password = hashPassword(user.password);
+
+        Random random = new Random();
+        int randomNum = random.nextInt(1000000000);
+
+        user.password = hashPassword(user.password + randomNum);
+        user.salt = randomNum;
         dao.createUser(user);
         HttpSession session = req.getSession(true);
         session.setAttribute("userName", user.username);

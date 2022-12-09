@@ -14,10 +14,11 @@
         <result property='username' column='name'/>
         <result property="email" column="email"/>
         <result property="password" column="password"/>
+        <result property="salt" column="salt"/>
     </resultMap>
 
     <insert id="createUser" parameterType='User' useGeneratedKeys='true' keyProperty='id'>
-        INSERT INTO users(name, email, password)
-        VALUES (#{username}, #{email}, #{password})
+        INSERT INTO users(name, email, password, salt)
+        VALUES (#{username}, #{email}, #{password}, #{salt})
     </insert>
 </mapper>
