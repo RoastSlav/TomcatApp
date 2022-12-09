@@ -38,11 +38,6 @@ public class CommentsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (!checkAuth(req)) {
-            resp.sendError(SC_FORBIDDEN);
-            return;
-        }
-
         String userId = req.getParameter("postId");
         int id = Integer.parseInt(userId);
 

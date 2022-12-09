@@ -34,4 +34,17 @@
         <url-pattern>/users/*</url-pattern>
     </servlet-mapping>
 
+    <filter>
+        <filter-name>AuthFiler</filter-name>
+        <filter-class>Filters.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthFiler</filter-name>
+        <servlet-name>CommentsServlet</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>AuthFiler</filter-name>
+        <servlet-name>PostsServlet</servlet-name>
+    </filter-mapping>
+
 </web-app>

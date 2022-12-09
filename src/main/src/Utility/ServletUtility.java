@@ -45,11 +45,6 @@ public class ServletUtility {
         outputStream.print(serialized);
     }
 
-    public static boolean checkAuth(HttpServletRequest req) {
-        HttpSession session = req.getSession(false);
-        return session != null && session.getAttribute("userName") != null;
-    }
-
     public static String getValueFromPart(String partName, HttpServletRequest req) throws ServletException, IOException {
         Part part = req.getPart(partName);
         StringBuilder sb = new StringBuilder();

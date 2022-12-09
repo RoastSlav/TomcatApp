@@ -45,11 +45,6 @@ public class PostsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (!checkAuth(req)) {
-            resp.sendError(SC_FORBIDDEN);
-            return;
-        }
-
         // /posts/1/comments
         String pathInfo = req.getPathInfo();
         Matcher matcher = COMMENTS_PATTERN.matcher(pathInfo);
@@ -75,11 +70,6 @@ public class PostsServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (!checkAuth(req)) {
-            resp.sendError(SC_FORBIDDEN);
-            return;
-        }
-
         String json = receiveJsonBody(req);
         JsonReader reader = new JsonReader(new StringReader(json));
         reader.setLenient(true);
@@ -94,11 +84,6 @@ public class PostsServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (!checkAuth(req)) {
-            resp.sendError(SC_FORBIDDEN);
-            return;
-        }
-
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) {
             resp.sendError(SC_BAD_REQUEST);
@@ -120,11 +105,6 @@ public class PostsServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (!checkAuth(req)) {
-            resp.sendError(SC_FORBIDDEN);
-            return;
-        }
-
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) {
             resp.sendError(SC_BAD_REQUEST);
