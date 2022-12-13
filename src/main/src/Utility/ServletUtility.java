@@ -1,5 +1,7 @@
 package Utility;
 
+import DAO.TokenDao;
+import Models.Token;
 import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
@@ -12,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.util.UUID;
 
 public class ServletUtility {
     public static final Gson GSON = new Gson();
@@ -66,5 +70,15 @@ public class ServletUtility {
             sb.append((char) b);
         }
         return sb.toString();
+    }
+
+    public static Token createToken(String username, TokenDao dao) {
+        Token token = new Token();
+        token.token = UUID.randomUUID().toString();
+        token.createdDate = LocalDate.now();
+        token.expirationDate = token.createdDate.plusMonths(1);
+        token.userName = username;
+        dao.addToken(token);
+        return token;
     }
 }

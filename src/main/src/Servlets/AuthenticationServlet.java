@@ -1,6 +1,8 @@
 package Servlets;
 
+import DAO.TokenDao;
 import DAO.UserDao;
+import Models.Token;
 import Models.User;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -10,9 +12,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Reader;
+import java.time.LocalDate;
 import java.util.Properties;
 import java.util.Random;
 import java.util.regex.Pattern;
@@ -24,7 +26,8 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 public class AuthenticationServlet extends HttpServlet {
     private static final Pattern REGISTER_PATTERN = Pattern.compile("/register");
     private static final Pattern LOGIN_PATTERN = Pattern.compile("/login");
-    UserDao dao;
+    UserDao userDao;
+    TokenDao tokenDao;
 
     @Override
     public void init() throws ServletException {
@@ -34,7 +37,8 @@ public class AuthenticationServlet extends HttpServlet {
             String mBatisResource = props.getProperty("mb_resource");
             try (Reader reader = Resources.getResourceAsReader(mBatisResource)) {
                 SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(reader, props);
-                dao = new UserDao(sessionFactory);
+                userDao = new UserDao(sessionFactory);
+                tokenDao = new TokenDao(sessionFactory);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -50,7 +54,7 @@ public class AuthenticationServlet extends HttpServlet {
         }
 
         if (LOGIN_PATTERN.matcher(pathInfo).matches()) {
-            if (!loginUser(req))
+            if (!loginUser(req, resp))
                 resp.sendError(SC_FORBIDDEN, "Invalid credentials");
             return;
         }
@@ -58,18 +62,24 @@ public class AuthenticationServlet extends HttpServlet {
         resp.sendError(SC_NOT_FOUND);
     }
 
-    private boolean loginUser(HttpServletRequest req) throws ServletException, IOException {
+    private boolean loginUser(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String username = getValueFromPart("username", req);
         String password = getValueFromPart("password", req);
 
-        User user = dao.getUser(username);
+        User user = userDao.getUser(username);
         if (user == null)
             return false;
 
         String encryptedPass = hashPassword(password + user.salt);
         if (user.password.equals(encryptedPass)) {
-            HttpSession session = req.getSession(true);
-            session.setAttribute("userName", username);
+            Token token = tokenDao.getToken(username);
+            if (token == null) {
+                token = createToken(username, tokenDao);
+            } else if (token.expirationDate.isBefore(LocalDate.now())) {
+                tokenDao.deleteToken(token.token);
+                token = createToken(username, tokenDao);
+            }
+            resp.addHeader("Authorization", "Bearer " + token);
             return true;
         }
         return false;
@@ -84,8 +94,6 @@ public class AuthenticationServlet extends HttpServlet {
 
         user.password = hashPassword(user.password + randomNum);
         user.salt = randomNum;
-        dao.createUser(user);
-        HttpSession session = req.getSession(true);
-        session.setAttribute("userName", user.username);
+        userDao.createUser(user);
     }
 }
